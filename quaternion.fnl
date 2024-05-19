@@ -49,6 +49,10 @@
 
 (fn number? [x] (= (type x) :number))
 (fn Quaternion.mt.__sub [a b] (+ (->quat a) (->quat (- b))))
+
+(defn scale [k q]
+  (let [[t x y z] (->quat q)]
+    (quat (* k t) (* k x) (* k y) (* k z))))
 (fn Quaternion.mt.__mul [q Q]
   (if (number? q) (scale q Q)
       (number? Q) (scale Q q)
@@ -87,6 +91,11 @@
 (fn Quaternion.mt.__div [u v]
   (if (number? v) (scale (/ v) u)
       (* (->quat u) (Quaternion.inverse (->quat v)))))
+
+(fn q-times-inv-q-is-1 [q]
+  (assert (= (* q (/ q)) (quat 1))))
+(q-times-inv-q-is-1 (quat 1))
+(q-times-inv-q-is-1 (quat 1 2 3 4))
 
 (set Quaternion.i (quat 0 1))
 (set Quaternion.j (quat 0 0 1))
