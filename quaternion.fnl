@@ -2,7 +2,7 @@
 (set Quaternion.mt {})
 
 (macro defn [name args ...]
-  `(tset Quaternion ,(tostring name)
+  `(set ,(sym (.. "Quaternion." (tostring name)))
     (fn ,name ,args ,...)))
 
 (fn Quaternion.mt.__eq [[t x y z] [T X Y Z]]
@@ -107,7 +107,6 @@
 (defn ->vector [q]
   (let [[_ x y z ] (->quat q)]
     (quat 0 x y z)))
-
 
 ;; TODO how do i make keyword args?
 (defn exp [q terms]
