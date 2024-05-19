@@ -30,6 +30,13 @@
 (assert (= (->quat (quat 1 0 0 0))
            (quat 1 0 0 0)))
 
+(defn vec [x y z] (quat 0 x y z))
+(defn vec? [q]
+  (and (quat? q)
+       (let [[r _ _ _] q]
+         (= r 0))))
+(defn complex [x y] (quat x y))
+
 (fn Quaternion.mt.__add [a b]
   (let [[t x y z] (->quat a)
         [T X Y Z] (->quat b)]
@@ -80,9 +87,8 @@
 (defn abs2 [q]
   (let [[t x y z] (->quat q)]
     (+ (sqr t) (sqr x) (sqr y) (sqr z))))
-(defn scale [k q]
-  (let [[t x y z] (->quat q)]
-    (quat (* k t) (* k x) (* k y) (* k z))))
+(defn abs [q] (math.sqrt (abs2 q)))
+
 (fn Quaternion.inverse [z]
   ;; q (q^*/qq^*) = 1
   ;; q (q^*/abs2(q)) =1
