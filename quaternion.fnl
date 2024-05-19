@@ -4,7 +4,9 @@
 (macro defn [name args ...]
   {:binding-form? true
    :body-form? true}
-  `(set ,(sym (.. "Quaternion." (tostring name)))
+  (fn symdot [a b]
+    (sym (.. (tostring a) "." (tostring b))))
+  `(set ,(symdot 'Quaternion name)
     (fn ,name ,args ,...)))
 
 (fn Quaternion.mt.__eq [[t x y z] [T X Y Z]]
