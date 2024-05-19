@@ -52,12 +52,13 @@
 (fn Quaternion.mt.__mul [q Q]
   (if (number? q) (scale q Q)
       (number? Q) (scale Q q)
-      (let [[t x y z] (->quat q)
-            [T X Y Z] (->quat Q)]
+      (let [[t x y z] q
+            [T X Y Z] Q]
         (quat
+         ;; r R      - v · V
          (- (* t T) (* x X) (* y Y) (* z Z))
-         ;; --- tV + vT ----|--------------- v x V --------------|
-         ;;                 |                  jk         kj
+         ;;---- tV + vT ----+--------------- v × V --------------+
+         ;;                 |                  jk          kj    |
          (+ (* t X) (* x T)                  (* y Z)  (- (* z Y)))
          ;;                 |        ik                    ki
          (+ (* t Y) (* y T)   (- (* x Z))                (* z X) )
@@ -116,7 +117,7 @@
     ((fn loop [sum n qn n!]
        (if (= n terms) sum
            (loop
-            (+ (scale (/ n!) qn) sum)
+            (+ (/ qn n!) sum)
             (+ n 1)
             (* q qn)
             (* (+ n 1) n!))))
