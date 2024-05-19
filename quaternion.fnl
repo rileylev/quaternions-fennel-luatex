@@ -2,6 +2,8 @@
 (set Quaternion.mt {})
 
 (macro defn [name args ...]
+  {:binding-form? true
+   :body-form? true}
   `(set ,(sym (.. "Quaternion." (tostring name)))
     (fn ,name ,args ,...)))
 
@@ -129,7 +131,3 @@
          (quat -1)))
 
 Quaternion
-
-;; Local Variables:
-;; eval: (put 'defn 'fennel-indent-function 'defun)
-;; End:
