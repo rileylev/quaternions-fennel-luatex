@@ -105,10 +105,10 @@
            (quat -1)))
 
 (defn ->scalar [q]
-  (let [[t _ _ _ ] (->quat q)]
+  (let [[t _ _ _] (->quat q)]
     (quat t)))
 (defn ->vector [q]
-  (let [[_ x y z ] (->quat q)]
+  (let [[_ x y z] (->quat q)]
     (quat 0 x y z)))
 
 ;; TODO how do i make keyword args?
