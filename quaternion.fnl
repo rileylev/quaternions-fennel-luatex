@@ -85,8 +85,9 @@
       (number? Q) (scale Q q)
       (let [[t x y z] q
             [T X Y Z] Q]
+        ;; (t + v⃗) (T + V⃗) = tT - v⃗ · V⃗  + tV⃗  + Tv⃗  + v⃗  × V⃗
         (quat
-         ;; r R      - v · V
+         ;; r R      - v⃗  · V⃗
          (- (* t T) (* x X) (* y Y) (* z Z))
          ;;---- tV + vT ----+--------------- v × V --------------+
          ;;                 |                  jk          kj    |
@@ -98,12 +99,12 @@
 (defn conj [q]
   (let [[t x y z] (->quat q)]
     (quat t (- x) (- y) (- z))))
-(test "conjugate negates the vector part"
+(test "conjugation negates the vector part"
       (assert (= (conj (quat 0 1)) (quat 0 -1)))
       (assert (= (conj (quat 0 1 2 3)) (quat 0 -1 -2 -3)))
       (assert (= (conj (quat 4 1 2 3)) (quat 4 -1 -2 -3))))
-(test "conjugate fixes 'real' quaternions"
-      (assert (= (conj (quat 1)) (quat 1))))
+(test "conjugation fixes 'real' quaternions"
+      (assert (== (conj (quat 1)) 1)))
 
 (fn sqr [x] (* x x))
 (defn abs2 [q]
