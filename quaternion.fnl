@@ -151,8 +151,18 @@
   (< (abs2 (- x y)) .000001))
 (assert (= (exp (quat 0))
            (quat 1)))
-(assert (≈
-         (exp (quat 0 math.pi))
-         (quat -1)))
+(assert (≈ (exp (quat 0 math.pi))
+           (quat -1)))
+
+(defn stereo1 [q ε]
+  (let [ε         (or ε .000001)
+        q         (->quat q)
+        [t x y z] q
+        shrink    (/ (- (+ 1 ε) t))]
+    (scale shrink (vec x y z))))
+
+(defn tikzprint [v]
+  (let [[_ x y z] v]
+    (tex.print (.. "(" x ", " y ", " z ")"))))
 
 Quaternion
