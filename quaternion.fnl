@@ -58,22 +58,22 @@
     (quat (+ t T) (+ x X) (+ y Y) (+ z Z))))
 
 (test "quaternions add componentwise"
- (assert (= (+ (quat 1 0 0 0)
-               (quat 0 1 0 0))
-            ;;----------------
-            (quat    1 1 0 0))))
+      (assert (= (+ (quat 1 0 0 0)
+                    (quat 0 1 0 0))
+                 ;;----------------
+                 (quat    1 1 0 0))))
 (test "addition promotes numbers to quaternions"
- (assert (= (quat 2)
-            (+ (quat 1)  1)
-            (+ 1         (quat 1)))))
+      (assert (= (quat 2)
+                 (+ (quat 1)  1)
+                 (+ 1         (quat 1)))))
 
 (fn Quaternion.mt.__unm [[t x y z]]
   (quat (- t) (- x) (- y) (- z)))
 (test "unary minus is the additive inverse"
- (fn q-plus-neg-q-is-0 [q]
-   (assert (= (+ q (- q)) (quat))))
- (q-plus-neg-q-is-0 (quat 1))
- (q-plus-neg-q-is-0 (quat 1 2 3 4)))
+      (fn q-plus-neg-q-is-0 [q]
+        (assert (= (+ q (- q)) (quat))))
+      (q-plus-neg-q-is-0 (quat 1))
+      (q-plus-neg-q-is-0 (quat 1 2 3 4)))
 
 (fn Quaternion.mt.__sub [a b] (+ (->quat a) (->quat (- b))))
 
