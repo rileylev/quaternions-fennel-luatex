@@ -11,6 +11,10 @@
 
 (fn Quaternion.mt.__eq [[t x y z] [T X Y Z]]
   (and (= t T) (= x X) (= y Y) (= z Z)))
+(defn == [u v]
+  (let [u (if (number? u) (quat u) u)
+        v (if (number? v) (quat v) v)]
+    (= u v)))
 (fn with-mt [q mt]
   (setmetatable q mt)
   q)
