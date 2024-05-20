@@ -9,6 +9,9 @@
   `(set ,(symdot 'Quaternion name)
     (fn ,name ,args ,...)))
 
+(fn test [name ...]
+  ...)
+
 (fn Quaternion.mt.__eq [[t x y z] [T X Y Z]]
   (and (= t T) (= x X) (= y Y) (= z Z)))
 
@@ -26,37 +29,51 @@
 (assert (= (quat) (quat 0 0 0 0)))
 
 (defn quat? [z] (= (getmetatable z) Quaternion.mt))
-(assert (quat? (quat 1 0 0 0)))
+(test "quat constructs quaternions (quat?=true)"
+      (assert (quat? (quat 1 0 0 0))))
+(test "scalars are not quaternions"
+      (assert (not (quat? 0))))
+(test "strings are not quaternions"
+      (assert (not (quat? "x"))))
+
 (defn ->quat [z]
   (if (quat? z) z
       (Quaternion.new [z 0 0 0])))
-(assert (= (->quat (quat 1 0 0 0))
-           (quat 1 0 0 0)))
+(test "->quat does nothing if the argument is already a quaternion"
+      (assert (= (->quat (quat 1 0 0 0))
+                 (quat 1 0 0 0))))
 
 (fn number? [x] (= (type x) :number))
 (defn == [u v]
   (let [u (if (number? u) (quat u) u)
         v (if (number? v) (quat v) v)]
     (= u v)))
-(assert (== 0 (quat)))
-(assert (== 1 (quat 1)))
+(test "a number is == to its inclusion inside the quaternions"
+      (assert (== 0 (quat)))
+      (assert (== 1 (quat 1))))
 
 (fn Quaternion.mt.__add [a b]
   (let [[t x y z] (->quat a)
         [T X Y Z] (->quat b)]
     (quat (+ t T) (+ x X) (+ y Y) (+ z Z))))
 
-(assert (= (+ (quat 1 0 0 0)
-              (quat 0 1 0 0))
-           ;;----------------
-           (quat    1 1 0 0)))
+(test "quaternions add componentwise"
+ (assert (= (+ (quat 1 0 0 0)
+               (quat 0 1 0 0))
+            ;;----------------
+            (quat    1 1 0 0))))
+(test "addition promotes numbers to quaternions"
+ (assert (= (quat 2)
+            (+ (quat 1)  1)
+            (+ 1         (quat 1)))))
 
 (fn Quaternion.mt.__unm [[t x y z]]
   (quat (- t) (- x) (- y) (- z)))
-(fn q-plus-neg-q-is-0 [q]
-  (assert (= (+ q (- q)) (quat))))
-(q-plus-neg-q-is-0 (quat 1))
-(q-plus-neg-q-is-0 (quat 1 2 3 4))
+(test "unary minus is the additive inverse"
+ (fn q-plus-neg-q-is-0 [q]
+   (assert (= (+ q (- q)) (quat))))
+ (q-plus-neg-q-is-0 (quat 1))
+ (q-plus-neg-q-is-0 (quat 1 2 3 4)))
 
 (fn Quaternion.mt.__sub [a b] (+ (->quat a) (->quat (- b))))
 
@@ -81,10 +98,12 @@
 (defn conj [q]
   (let [[t x y z] (->quat q)]
     (quat t (- x) (- y) (- z))))
-(assert (= (conj (quat 0 1)) (quat 0 -1)))
-(assert (= (conj (quat 0 1 2 3)) (quat 0 -1 -2 -3)))
-(assert (= (conj (quat 4 1 2 3)) (quat 4 -1 -2 -3)))
-(assert (= (conj (quat 1)) (quat 1)))
+(test "conjugate negates the vector part"
+      (assert (= (conj (quat 0 1)) (quat 0 -1)))
+      (assert (= (conj (quat 0 1 2 3)) (quat 0 -1 -2 -3)))
+      (assert (= (conj (quat 4 1 2 3)) (quat 4 -1 -2 -3))))
+(test "conjugate fixes 'real' quaternions"
+      (assert (= (conj (quat 1)) (quat 1))))
 
 (fn sqr [x] (* x x))
 (defn abs2 [q]
@@ -101,24 +120,28 @@
   (if (number? v) (scale (/ v) u)
       (* (->quat u) (Quaternion.inverse (->quat v)))))
 
-(fn q-times-inv-q-is-1 [q]
-  (assert (= (* q (/ q)) (quat 1))))
-(q-times-inv-q-is-1 (quat 1))
-(q-times-inv-q-is-1 (quat 1 2 3 4))
-(assert (= (/ (quat 0 1))     (quat 0 -1)))
-(assert (= (/ (quat 0 0 1))   (quat 0  0 -1)))
-(assert (= (/ (quat 0 0 0 1)) (quat 0  0  0 -1)))
-(assert (= (/ (quat 2)) (quat .5)))
+(test "(/ q) is the multiplicative inverse"
+      (fn q-times-inv-q-is-1 [q]
+        (assert (= (* q (/ q)) (quat 1))))
+      (q-times-inv-q-is-1 (quat 1))
+      (q-times-inv-q-is-1 (quat 1 2 3 4)))
+(test "(/ i) = -i, (/ j)= -j, (/ k) = -k"
+      (assert (= (/ (quat 0 1))     (quat 0 -1)))
+      (assert (= (/ (quat 0 0 1))   (quat 0  0 -1)))
+      (assert (= (/ (quat 0 0 0 1)) (quat 0  0  0 -1))))
+(test "(/ _) is equivalent to ordinary inverse on 'real' quaternions"
+      (assert (= (/ (quat 2)) (quat .5))))
 
 (set Quaternion.i (quat 0 1))
 (set Quaternion.j (quat 0 0 1))
 (set Quaternion.k (quat 0 0 0 1))
 
-(assert (= (* Quaternion.i Quaternion.i) (quat -1)))
-(assert (= (* Quaternion.j Quaternion.j) (quat -1)))
-(assert (= (* Quaternion.k Quaternion.k) (quat -1)))
-(assert (= (* Quaternion.i Quaternion.j Quaternion.k)
-           (quat -1)))
+(test "i²=j²=k²=ijk=-1"
+      (assert (= (* Quaternion.i Quaternion.i) (quat -1)))
+      (assert (= (* Quaternion.j Quaternion.j) (quat -1)))
+      (assert (= (* Quaternion.k Quaternion.k) (quat -1)))
+      (assert (= (* Quaternion.i Quaternion.j Quaternion.k)
+                 (quat -1))))
 
 (defn ->scalar [q]
   (let [[t _ _ _] (->quat q)]
@@ -149,10 +172,12 @@
 
 (fn ≈ [x y]
   (< (abs2 (- x y)) .000001))
-(assert (= (exp (quat 0))
-           (quat 1)))
-(assert (≈ (exp (quat 0 math.pi))
-           (quat -1)))
+(test "e^0 = 1"
+      (assert (= (exp (quat 0))
+                 (quat 1))))
+(test "exp(iπ)=-1"
+      (assert (≈ (exp (quat 0 math.pi))
+                 (quat -1))))
 
 (defn stereo1 [q ε]
   (let [ε         (or ε .000001)
