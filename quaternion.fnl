@@ -11,10 +11,7 @@
 
 (fn Quaternion.mt.__eq [[t x y z] [T X Y Z]]
   (and (= t T) (= x X) (= y Y) (= z Z)))
-(defn == [u v]
-  (let [u (if (number? u) (quat u) u)
-        v (if (number? v) (quat v) v)]
-    (= u v)))
+
 (fn with-mt [q mt]
   (setmetatable q mt)
   q)
@@ -36,12 +33,13 @@
 (assert (= (->quat (quat 1 0 0 0))
            (quat 1 0 0 0)))
 
-(defn vec [x y z] (quat 0 x y z))
-(defn vec? [q]
-  (and (quat? q)
-       (let [[r _ _ _] q]
-         (= r 0))))
-(defn complex [x y] (quat x y))
+(fn number? [x] (= (type x) :number))
+(defn == [u v]
+  (let [u (if (number? u) (quat u) u)
+        v (if (number? v) (quat v) v)]
+    (= u v)))
+(assert (== 0 (quat)))
+(assert (== 1 (quat 1)))
 
 (fn Quaternion.mt.__add [a b]
   (let [[t x y z] (->quat a)
@@ -60,7 +58,6 @@
 (q-plus-neg-q-is-0 (quat 1))
 (q-plus-neg-q-is-0 (quat 1 2 3 4))
 
-(fn number? [x] (= (type x) :number))
 (fn Quaternion.mt.__sub [a b] (+ (->quat a) (->quat (- b))))
 
 (defn scale [k q]
@@ -108,16 +105,14 @@
   (assert (= (* q (/ q)) (quat 1))))
 (q-times-inv-q-is-1 (quat 1))
 (q-times-inv-q-is-1 (quat 1 2 3 4))
+(assert (= (/ (quat 0 1))     (quat 0 -1)))
+(assert (= (/ (quat 0 0 1))   (quat 0  0 -1)))
+(assert (= (/ (quat 0 0 0 1)) (quat 0  0  0 -1)))
+(assert (= (/ (quat 2)) (quat .5)))
 
 (set Quaternion.i (quat 0 1))
 (set Quaternion.j (quat 0 0 1))
 (set Quaternion.k (quat 0 0 0 1))
-
-(assert (= (/ (quat 0 1))     (quat 0 -1)))
-(assert (= (/ (quat 0 0 1))   (quat 0  0 -1)))
-(assert (= (/ (quat 0 0 0 1)) (quat 0  0  0 -1)))
-
-(assert (= (/ (quat 2)) (quat .5)))
 
 (assert (= (* Quaternion.i Quaternion.i) (quat -1)))
 (assert (= (* Quaternion.j Quaternion.j) (quat -1)))
@@ -131,6 +126,14 @@
 (defn ->vector [q]
   (let [[_ x y z] (->quat q)]
     (quat 0 x y z)))
+
+(defn vec [x y z] (quat 0 x y z))
+(defn realpart [[r _ _ _]] r)
+(defn vec? [q]
+  (and (quat? q) (= (realpart q) 0)))
+(defn cross [u v] (->vector (* u v)))
+(defn dot   [u v] (- (realpart (* u v))))
+(defn complex [x y] (quat x y))
 
 ;; TODO how do i make keyword args?
 (defn exp [q terms]
