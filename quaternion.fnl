@@ -9,8 +9,7 @@
   `(set ,(symdot 'Quaternion name)
     (fn ,name ,args ,...)))
 
-(fn test [name ...]
-  ...)
+(fn test [name ...] ...)
 
 (fn Quaternion.mt.__eq [[t x y z] [T X Y Z]]
   (and (= t T) (= x X) (= y Y) (= z Z)))
@@ -26,7 +25,8 @@
         y (or y 0)
         z (or z 0)]
     (Quaternion.new [t x y z])))
-(assert (= (quat) (quat 0 0 0 0)))
+(test "The nullary quat is the zero quaterinon"
+      (assert (= (quat) (quat 0 0 0 0))))
 
 (defn quat? [z] (= (getmetatable z) Quaternion.mt))
 (test "quat constructs quaternions (quat?=true)"
@@ -48,7 +48,7 @@
   (let [u (if (number? u) (quat u) u)
         v (if (number? v) (quat v) v)]
     (= u v)))
-(test "a number is == to its inclusion inside the quaternions"
+(test "a number is == to its image in the quaternions under inclusion"
       (assert (== 0 (quat)))
       (assert (== 1 (quat 1))))
 
@@ -137,11 +137,10 @@
 (set Quaternion.k (quat 0 0 0 1))
 
 (test "i²=j²=k²=ijk=-1"
-      (assert (= (* Quaternion.i Quaternion.i) (quat -1)))
-      (assert (= (* Quaternion.j Quaternion.j) (quat -1)))
-      (assert (= (* Quaternion.k Quaternion.k) (quat -1)))
-      (assert (= (* Quaternion.i Quaternion.j Quaternion.k)
-                 (quat -1))))
+      (assert (== (* Quaternion.i Quaternion.i)              -1))
+      (assert (== (* Quaternion.j Quaternion.j)              -1))
+      (assert (== (* Quaternion.k Quaternion.k)              -1))
+      (assert (== (* Quaternion.i Quaternion.j Quaternion.k) -1)))
 
 (defn ->scalar [q]
   (let [[t _ _ _] (->quat q)]
@@ -173,8 +172,7 @@
 (fn ≈ [x y]
   (< (abs2 (- x y)) .000001))
 (test "e⁰ = 1"
-      (assert (= (exp (quat 0))
-                 (quat 1))))
+      (assert (== (exp (quat 0)) 1)))
 (test "exp(iπ)=-1"
       (assert (≈ (exp (quat 0 math.pi))
                  (quat -1))))
