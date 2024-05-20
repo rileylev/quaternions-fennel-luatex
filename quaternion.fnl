@@ -151,6 +151,12 @@
 
 (defn vec [x y z] (quat 0 x y z))
 (defn realpart [[r _ _ _]] r)
+(defn realquat? [q]
+  (and (quat? q)
+       (let [[t x y z] q]
+         (= 0 x y z))))
+(defn real? [q]
+  (or (number? q) (realquat? q)))
 (defn vec? [q]
   (and (quat? q) (= (realpart q) 0)))
 (defn cross [u v] (->vector (* u v)))
