@@ -172,7 +172,7 @@
 
 (fn ≈ [x y]
   (< (abs2 (- x y)) .000001))
-(test "e^0 = 1"
+(test "e⁰ = 1"
       (assert (= (exp (quat 0))
                  (quat 1))))
 (test "exp(iπ)=-1"
