@@ -11,6 +11,8 @@
 
 (fn test [name ...] ...)
 
+(fn number? [x] (= (type x) :number))
+
 (fn Quaternion.mt.__eq [[t x y z] [T X Y Z]]
   (and (= t T) (= x X) (= y Y) (= z Z)))
 
@@ -38,12 +40,12 @@
 
 (defn ->quat [z]
   (if (quat? z) z
-      (Quaternion.new [z 0 0 0])))
+      (number? z) (Quaternion.new [z 0 0 0])
+                  (error ":C")))
 (test "->quat does nothing if the argument is already a quaternion"
       (assert (= (->quat (quat 1 0 0 0))
                  (quat 1 0 0 0))))
 
-(fn number? [x] (= (type x) :number))
 (defn == [u v]
   (let [u (if (number? u) (quat u) u)
         v (if (number? v) (quat v) v)]
@@ -81,6 +83,8 @@
   (let [[t x y z] (->quat q)]
     (quat (* k t) (* k x) (* k y) (* k z))))
 (fn Quaternion.mt.__mul [q Q]
+  (assert q)
+  (assert Q)
   (if (number? q) (scale q Q)
       (number? Q) (scale Q q)
       (let [[t x y z] q
@@ -184,15 +188,34 @@
       (assert (≈ (exp (quat 0 math.pi))
                  (quat -1))))
 
+(defn hopf [q k]
+  (let [k (or k Quaternion.k)]
+    (* q k (/ q))))
+
 (defn stereo1 [q ε]
-  (let [ε         (or ε .000001)
+  (let [ε         (or ε .001)
         q         (->quat q)
         [t x y z] q
         shrink    (/ (- (+ 1 ε) t))]
     (scale shrink (vec x y z))))
+(defn stereok [q ε]
+  (let [q         (->quat q)
+        [t x y z] q]
+    (stereo1 (quat z x y t) ε)))
 
 (defn tikzprint [v]
   (let [[_ x y z] v]
-    (tex.print (.. "(" x ", " y ", " z ")"))))
+    (tex.print (.. x ", " y "," z))))
+
+(defn G [α]
+  (fn [s t]
+    (+ (* (math.cos α)
+          (exp (* s Quaternion.k)))
+       (* (math.sin α)
+          (exp (- (* t Quaternion.k)))
+          Quaternion.j))))
+
+(defn draw [a s t]
+  (tikzprint (stereo1 (* Quaternion.k ((G a) s (+ 0 t))))))
 
 Quaternion

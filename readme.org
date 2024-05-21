@@ -3,3 +3,9 @@
 I want to use quaternions in my [[https://tikz.dev/][TikZ]] pictures, but I don't want to teach TeX what a quaternion is.
 So I can use [[https://www.luatex.org/][LuaTeX]]'s ~\directlua~. Because I already have some clojure code for drawing, I want to use
 [[https://fennel-lang.org/][Fennel]], in the hope that eventually I can use a common subset of Clojure and Fennel for drawing diagrams in TikZ or in the browser.
+* things that seem important for a fennel-clojure compatibility layer
+** seq-like tools
+*** transducers
+*** seq
+*** functional data structure?
+** numerical tower & polymorphism
