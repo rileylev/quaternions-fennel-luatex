@@ -1,12 +1,11 @@
 \documentclass{article}
 \usepackage{tikz}
 \def\directfennel#1{%
-  \directlua{require("fennel").eval("\luaescapestring{#1}")}}
-
+  \directlua{require("fennel").install().eval("\luaescapestring{#1}")}}
 
 \begin{document}
-\directlua{
-  q = require("fennel").dofile("quaternion.fnl")
+\directfennel{
+  (set _G.q (require "quaternion"))
 }
 \[
   G(\alpha)(s,t)= \cos\alpha\, e^{sk} + \sin\alpha\, e^{-tk}j

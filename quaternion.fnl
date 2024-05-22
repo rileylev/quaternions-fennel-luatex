@@ -1,6 +1,17 @@
 (local Quaternion {})
 (set Quaternion.mt {})
 
+(macro defn [name args ...]
+  {:binding-form? true
+   :body-form? true}
+  (fn symdot [a b]
+    (sym (.. (tostring a) "." (tostring b))))
+  `(local ,name
+    (let []
+      (fn ,name ,args ,...)
+      (set ,(symdot 'Quaternion name) ,name)
+      ,name)))
+
 (fn test [name ...] ...)
 
 (fn number? [x] (= (type x) :number))
@@ -13,7 +24,7 @@
   q)
 (fn Quaternion.new [[t x y z]]
   (with-mt [t x y z] Quaternion.mt))
-(fn quat [t x y z]
+(defn quat [t x y z]
   (let [t (or t 0)
         x (or x 0)
         y (or y 0)
