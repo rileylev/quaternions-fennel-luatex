@@ -212,8 +212,8 @@
     (+ (* (math.cos α)
           (exp (* s Quaternion.k)))
        (* (math.sin α)
-          (exp (- (* t Quaternion.k)))
-          Quaternion.j))))
+          (exp (* t Quaternion.k))
+          Quaternion.i))))
 
 (defn draw [a s t]
   (tikzprint (stereok ((G a) s t))))

@@ -301,7 +301,7 @@ end
 Quaternion.tikzprint = tikzprint
 local function G(_ce_b1)
   local function _34_(s, t)
-    return ((math.cos(_ce_b1) * exp((s * Quaternion.k))) + (math.sin(_ce_b1) * exp(( - (t * Quaternion.k))) * Quaternion.j))
+    return ((math.cos(_ce_b1) * exp((s * Quaternion.k))) + (math.sin(_ce_b1) * exp((t * Quaternion.k)) * Quaternion.i))
   end
   return _34_
 end
