@@ -1,14 +1,6 @@
 (local Quaternion {})
 (set Quaternion.mt {})
 
-(macro defn [name args ...]
-  {:binding-form? true
-   :body-form? true}
-  (fn symdot [a b]
-    (sym (.. (tostring a) "." (tostring b))))
-  `(set ,(symdot 'Quaternion name)
-    (fn ,name ,args ,...)))
-
 (fn test [name ...] ...)
 
 (fn number? [x] (= (type x) :number))
@@ -21,7 +13,7 @@
   q)
 (fn Quaternion.new [[t x y z]]
   (with-mt [t x y z] Quaternion.mt))
-(defn quat [t x y z]
+(fn quat [t x y z]
   (let [t (or t 0)
         x (or x 0)
         y (or y 0)
@@ -30,7 +22,7 @@
 (test "The nullary quat is the zero quaterinon"
       (assert (= (quat) (quat 0 0 0 0))))
 
-(defn quat? [z] (= (getmetatable z) Quaternion.mt))
+(fn quat? [z] (= (getmetatable z) Quaternion.mt))
 (test "quat constructs quaternions (quat?=true)"
       (assert (quat? (quat 1 0 0 0))))
 (test "scalars are not quaternions"
@@ -38,7 +30,7 @@
 (test "strings are not quaternions"
       (assert (not (quat? "x"))))
 
-(defn ->quat [z]
+(fn ->quat [z]
   (if (quat? z) z
       (number? z) (Quaternion.new [z 0 0 0])
                   (error ":C")))
@@ -46,7 +38,7 @@
       (assert (= (->quat (quat 1 0 0 0))
                  (quat 1 0 0 0))))
 
-(defn == [u v]
+(fn == [u v]
   (let [u (if (number? u) (quat u) u)
         v (if (number? v) (quat v) v)]
     (= u v)))
@@ -72,14 +64,14 @@
 (fn Quaternion.mt.__unm [[t x y z]]
   (quat (- t) (- x) (- y) (- z)))
 (test "unary minus is the additive inverse"
-      (fn q-plus-neg-q-is-0 [q]
-        (assert (= (+ q (- q)) (quat))))
-      (q-plus-neg-q-is-0 (quat 1))
-      (q-plus-neg-q-is-0 (quat 1 2 3 4)))
+      (do (fn q-plus-neg-q-is-0 [q]
+            (assert (= (+ q (- q)) (quat))))
+          (q-plus-neg-q-is-0 (quat 1))
+          (q-plus-neg-q-is-0 (quat 1 2 3 4))))
 
 (fn Quaternion.mt.__sub [a b] (+ (->quat a) (->quat (- b))))
 
-(defn scale [k q]
+(fn scale [k q]
   (let [[t x y z] (->quat q)]
     (quat (* k t) (* k x) (* k y) (* k z))))
 (fn Quaternion.mt.__mul [q Q]
@@ -100,7 +92,7 @@
          (+ (* t Y) (* y T)   (- (* x Z))                (* z X) )
          ;;                 |        ij        ji
          (+ (* t Z) (* z T)      (* x Y)  (- (* y X))            )))))
-(defn conj [q]
+(fn conj [q]
   (let [[t x y z] (->quat q)]
     (quat t (- x) (- y) (- z))))
 (test "conjugation negates the vector part"
@@ -111,10 +103,10 @@
       (assert (== (conj (quat 1)) 1)))
 
 (fn sqr [x] (* x x))
-(defn abs2 [q]
+(fn abs2 [q]
   (let [[t x y z] (->quat q)]
     (+ (sqr t) (sqr x) (sqr y) (sqr z))))
-(defn abs [q] (math.sqrt (abs2 q)))
+(fn abs [q] (math.sqrt (abs2 q)))
 
 (fn Quaternion.inverse [z]
   ;; q (q^*/qq^*) = 1
@@ -126,10 +118,10 @@
       (* (->quat u) (Quaternion.inverse (->quat v)))))
 
 (test "(/ q) is the multiplicative inverse"
-      (fn q-times-inv-q-is-1 [q]
-        (assert (= (* q (/ q)) (quat 1))))
-      (q-times-inv-q-is-1 (quat 1))
-      (q-times-inv-q-is-1 (quat 1 2 3 4)))
+      (do (fn q-times-inv-q-is-1 [q]
+            (assert (= (* q (/ q)) (quat 1))))
+          (q-times-inv-q-is-1 (quat 1))
+          (q-times-inv-q-is-1 (quat 1 2 3 4))))
 (test "(/ i) = -i, (/ j)= -j, (/ k) = -k"
       (assert (= (/ (quat 0 1))     (quat 0 -1)))
       (assert (= (/ (quat 0 0 1))   (quat 0  0 -1)))
@@ -147,29 +139,29 @@
       (assert (== (* Quaternion.k Quaternion.k)              -1))
       (assert (== (* Quaternion.i Quaternion.j Quaternion.k) -1)))
 
-(defn ->scalar [q]
+(fn ->scalar [q]
   (let [[t _ _ _] (->quat q)]
     (quat t)))
-(defn ->vector [q]
+(fn ->vector [q]
   (let [[_ x y z] (->quat q)]
     (quat 0 x y z)))
 
-(defn vec [x y z] (quat 0 x y z))
-(defn realpart [[r _ _ _]] r)
-(defn realquat? [q]
+(fn vec [x y z] (quat 0 x y z))
+(fn realpart [[r _ _ _]] r)
+(fn realquat? [q]
   (and (quat? q)
        (let [[t x y z] q]
          (= 0 x y z))))
-(defn real? [q]
+(fn real? [q]
   (or (number? q) (realquat? q)))
-(defn vec? [q]
+(fn vec? [q]
   (and (quat? q) (= (realpart q) 0)))
-(defn cross [u v] (->vector (* u v)))
-(defn dot   [u v] (- (realpart (* u v))))
-(defn complex [x y] (quat x y))
+(fn cross [u v] (->vector (* u v)))
+(fn dot   [u v] (- (realpart (* u v))))
+(fn complex [x y] (quat x y))
 
 ;; TODO how do i make keyword args?
-(defn exp [q terms]
+(fn exp [q terms]
   (let [terms (or terms 30)]
     ((fn loop [sum n qn n!]
        (if (= n terms) sum
@@ -188,26 +180,26 @@
       (assert (≈ (exp (quat 0 math.pi))
                  (quat -1))))
 
-(defn hopf [q k]
+(fn hopf [q k]
   (let [k (or k Quaternion.k)]
     (* q k (/ q))))
 
-(defn stereo1 [q ε]
+(fn stereo1 [q ε]
   (let [ε         (or ε .001)
         q         (->quat q)
         [t x y z] q
         shrink    (/ (- (+ 1 ε) t))]
     (scale shrink (vec x y z))))
-(defn stereok [q ε]
+(fn stereok [q ε]
   (let [q         (->quat q)
         [t x y z] q]
     (stereo1 (quat z x y t) ε)))
 
-(defn tikzprint [v]
+(fn tikzprint [v]
   (let [[_ x y z] v]
     (tex.print (.. x ", " y "," z))))
 
-(defn G [α]
+(fn G [α]
   (fn [s t]
     (+ (* (math.cos α)
           (exp (* s Quaternion.k)))
@@ -215,9 +207,9 @@
           (exp (* t Quaternion.k))
           Quaternion.i))))
 
-(defn draw [a s t]
+(fn Quaternion.draw [a s t]
   (tikzprint (stereok ((G a) s t))))
-(defn draw2 [a u s t]
+(fn Quaternion.draw2 [a u s t]
   (let [[t x y z] (* ((G a) (+ s) (- t))
                      (exp (* u Quaternion.k)))]
     (tikzprint (stereo1 (quat x t y z)))))

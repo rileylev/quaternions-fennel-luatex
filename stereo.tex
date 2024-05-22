@@ -1,11 +1,12 @@
 \documentclass{article}
 \usepackage{tikz}
 \def\directfennel#1{%
-  \directlua{require("fennel").install().eval("\luaescapestring{#1}")}}
+  \directlua{require("fennel").eval("\luaescapestring{#1}")}}
+
 
 \begin{document}
 \directlua{
-  q = require("Quaternion")
+  q = require("fennel").dofile("quaternion.fnl")
 }
 \[
   G(\alpha)(s,t)= \cos\alpha\, e^{sk} + \sin\alpha\, e^{-tk}j
@@ -35,7 +36,7 @@
 \]
 Hopf fibers
 \[
-\def\thingy#1#2#3#4{\directlua{q.draw2(#1, #2, #3,#4)}}
+\def\thingy#1#2#3#4{\directfennel{(q.draw2 #1 #2 #3 #4)}}
 \begin{tikzpicture}
   \clip (-5,-5) rectangle (5,5);
   \foreach\a in {-2.9,-1,-.6,.6,1,2.9}
