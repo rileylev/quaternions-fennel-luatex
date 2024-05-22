@@ -18,9 +18,17 @@
   \foreach \A in {.2,.4,...,1.4}
   {
     \begin{scope}[transparency group, opacity=.5]
-      \draw[samples=50,domain=-3.14:3.14,smooth]
+      \draw[samples=60,domain=-3.14:3.14,smooth]
       plot (\thingy{\A}{\x}{\B}) --cycle;
     \end{scope}
+  }
+  \foreach\A in {.4,.6,...,1.6}
+  {
+  \begin{scope}
+    \fill [even odd rule,fill opacity=.05, draw opacity=.4,draw=black,fill=blue,samples=30, domain=-3.14:3.14,smooth]
+    plot (\thingy{\A}{1.57}{\x})
+    plot (\thingy{\A}{-1.57}{\x});
+  \end{scope}
   }
 \end{tikzpicture}
 \]
