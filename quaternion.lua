@@ -307,11 +307,16 @@ local function G(_ce_b1)
 end
 Quaternion.G = G
 local function draw(a, s, t)
-  return tikzprint(stereo1((Quaternion.k * G(a)(s, t))))
+  return tikzprint(stereok(G(a)(s, t)))
 end
 Quaternion.draw = draw
-local function drawhopf(a, s, t)
-  return tikzprint(stereo1(hopf(G(a)(s, t))))
+local function draw2(a, u, s, t)
+  local _let_35_ = (G(a)(s, ( - t)) * exp((u * Quaternion.k)))
+  local t0 = _let_35_[1]
+  local x = _let_35_[2]
+  local y = _let_35_[3]
+  local z = _let_35_[4]
+  return tikzprint(stereo1(quat(x, t0, y, z)))
 end
-Quaternion.drawhopf = drawhopf
+Quaternion.draw2 = draw2
 return Quaternion

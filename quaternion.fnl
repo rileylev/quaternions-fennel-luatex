@@ -216,8 +216,10 @@
           Quaternion.j))))
 
 (defn draw [a s t]
-  (tikzprint (stereo1 (* Quaternion.k ((G a) s t)))))
-(defn drawhopf [a s t]
-  (tikzprint (stereo1 (hopf ((G a) s t)))))
+  (tikzprint (stereok ((G a) s t))))
+(defn draw2 [a u s t]
+  (let [[t x y z] (* ((G a) (+ s) (- t))
+                     (exp (* u Quaternion.k)))]
+    (tikzprint (stereo1 (quat x t y z)))))
 
 Quaternion
