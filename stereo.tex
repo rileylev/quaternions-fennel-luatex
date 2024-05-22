@@ -10,17 +10,20 @@
   G(\alpha)(s,t)= \cos\alpha\, e^{sk} + \sin\alpha\, e^{-tk}j
 \]
 
+\[
 \def\thingy#1#2#3{\directlua{q.draw(#1, #2, #3)}}
 \begin{tikzpicture}
-  \foreach \B in {-3.,-2.,...,2}
-  \foreach \A in {.3,.4,...,1.4}
+  \clip (-5,-5) rectangle (5,5);
+  \foreach \B in {-3.14,-2.0933,...,3}
+  \foreach \A in {.2,.4,...,1.4}
   {
-  \begin{scope}[transparency group, opacity=.4]
-    \draw[samples=40,domain=-3.14:3.14,smooth]
-    plot (\thingy{\A}{\x}{\B}) --cycle;
-  \end{scope}
+    \begin{scope}[transparency group, opacity=.5]
+      \draw[samples=50,domain=-3.14:3.14,smooth]
+      plot (\thingy{\A}{\x}{\B}) --cycle;
+    \end{scope}
   }
 \end{tikzpicture}
+\]
 
 
 \end{document}
